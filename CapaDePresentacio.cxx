@@ -1,104 +1,50 @@
 //CapaDePresentacio.cxx
 #include "CapaDePresentacio.hxx"
+#include "CtrlRegistreUsuari.hxx"
+#include "CtrlConsultaUsuari.hxx"
+#include "DTOUsuari.hxx"
 #include <iostream>
 #include <string>
-#include <boost/date_time/gregorian/gregorian.hpp>
-void CapaDePresentacio::crear_usuari()
-{
-    string user, nom;
-    int any, mes, dia;
-    cout << "Introdueix username: ";
-    cin >> user;
-    cout << "Introdueix nom complet: ";
-    cin.ignore();
-    getline(cin, nom);
-    cout << "Introdueix data de naixement (DD MM AAAA): ";
-    cin >> dia >> mes >> any;
 
-    date data_naixement(any, mes, dia);
-
-    CapaDeDomini& domini = CapaDeDomini::getInstance();
+void CapaDePresentacio::registrarUsuari(){
+    cout << "** Registre usuari **" << endl; 
     try {
-        domini.registrarUsuari(user, nom, data_naixement);
-        cout << "Usuari creat.\n";
+        string nom, username, password, email;
+        int edat;
+        
+        cout << "Nom complet: "; getline(cin, nom);
+        cout << "Sobrenom: ";   getline(cin, username);
+        cout << "Contrasenya: ";getline(cin, password);
+        cout << "Correu: ";     getline(cin, email);
+        cout << "Edat: ";       cin >> edat; 
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // neteja buffer
+
+        CtrlRegistreUsuari ctrlRegUser(new DAOUsuari());
+        ctrlRegUser.registraUsuari(username, password, nom, email, edat);
+        cout << "Nou usuari registrat correctament!\n";
     }
-    catch (const exception& e) {
-        cout << "Error al crear l'usuari: " << e.what() << endl;
+    // Falta fitxer de gestió d'excepcions
+    catch (const SobrenomExisteix& se ) {
+        cout << "Ja existeix un usuari amb aquest sobrenom" << endl;
     }
+    catch (const CorreuExisteix& ce){
+        cout << "Ja existeix un usuari amb aquest correu electrònic" << endl;
+    }
+    catch (const MenorEdat& me){
+        cout << "No es pot registrar un menor" << endl;
+    }
+
 }
 
-void CapaDePresentacio::esborrar_usuari()
-{
-    string user;
-    cout << "Username de l'usuari a esborrar: ";
-    cin >> user;
-    CapaDeDomini& domini = CapaDeDomini::getInstance();
-    try {
-        domini.esborrarUsuari(user);
-        cout << "Usuari esborrat.\n";
-    }
-    catch (const exception& e) {
-        cout << "Error al esborrar l'usuari: " << e.what() << endl;
-    }
-}
-//Exemple funcio per actualitzar un usuari opcionalment camp a camp
-void CapaDePresentacio::actualitzar_usuari() {
-    string user;
-    cout << "Username de l'usuari a modificar: ";
-    cin >> user;
-    CapaDeDomini& domini = CapaDeDomini::getInstance();
-    try {
-        //Recuperem les dades actuals de l’usuari des de la capa de domini
-        DTOUsuari dto = domini.consultarUsuari(user);
-        cout << "Dades actuals:\n";
-        cout << "Nom: " << dto.get_nomcomplet() << endl;
-        cout << "Data naixement: " << dto.get_data_naixement() << endl;
-        // Eliminem el salt de línia pendent després de llegir amb '>>'
-        // max() indica que es descarti tot el que quedi al buffer fins trobar un '\n'
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        string nou_nom;
-        cout << "\nNou nom complet (enter per mantenir): ";
-        getline(cin, nou_nom);
-        if (nou_nom.empty()) {
-            // Si no s’escriu res, mantenim el nom actual
-            nou_nom = dto.get_nomcomplet();
-        }
-        cout << "Nova data de naixement (DD MM AAAA) (enter per mantenir): ";
-        string linia_data;
-        getline(cin, linia_data);
-        // Per defecte, conservem la data existent
-        date nova_data = dto.get_data_naixement();
-        if (!linia_data.empty()) {
-            int dia, mes, any;
-            std::istringstream iss(linia_data);
-            if (iss >> dia >> mes >> any) {
-                nova_data = date(any, mes, dia);
-            }
-        }
-        domini.modificarUsuari(user, nou_nom, nova_data);
-        cout << "Usuari modificat.\n";
-    }
-    
-    catch (const exception& e) {
-        cout << "Error al modificar l'usuari: " << e.what() << endl;
-    }
-}
+void CapaDePresentacio::consultaUsuari(){
+    cout << "** Consulta usuari **" << endl; 
+    // Demanem la informació a la capa de control
+    CtrlConsultaUsuari ctrlConsultaUser(new DAOUsuari());
+    DTOUsuari info = ctrlConsultaUser.consultaUsuari();
 
-// PER FER
-void CapaDePresentacio::llegir_usuaris(){
-    // Implementar
-}
-void CapaDePresentacio::llegir_usuari()
-{
-    string user;
-    cout << "Username de l'usuari a consultar: ";
-    cin >> user;
-    
-    CapaDeDomini& domini = CapaDeDomini::getInstance();
-    
-    // Ara la capa de domini retorna un DTOUsuari
-    DTOUsuari dto = domini.consultarUsuari(user);
-    cout << "Username: " << dto.get_username() << endl;
-    cout << "Nom: " << dto.get_nomcomplet() << endl;
-    cout << "Data naixement: " << dto.get_data_naixement() << endl;
+    cout << "Nom complet: " << info.get_nomcomplet() << endl;
+    cout << "Sobrenom: " << info.get_username() << endl;
+    cout << "Correu electronic: " << info.get_correu() << endl;
+    cout << "Edat: " << info.get_edat() << endl;
+    cout << "Nombre total d'experiencies reservades: " << info.get_numReserves() << endl;
 }

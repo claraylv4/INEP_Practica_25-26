@@ -9,52 +9,50 @@ DAOUsuari::DAOUsuari()
     db = connexioBD::getInstance().getDB();
 }
 
-bool DAOUsuari::existeix(const string& username)
-{ // FET PER IA
-    odb::transaction t(db->begin());
-    shared_ptr<usuari> ptr = db->load<usuari>(username);
-    t.commit();
-    return ptr != nullptr;
-}
-
-usuari DAOUsuari::obte(const string& username)
-{ // FET PER IA
-    odb::transaction t(db->begin());
-    shared_ptr<usuari> ptr = db->load<usuari>(username);
-    t.commit();
-    return *ptr;
-}
-
-std::vector<usuari> DAOUsuari::tots()
-{ // FET PER IA
-    odb::transaction t(db->begin());
-    std::vector<usuari> usuaris = db->load_all<usuari>();
-    t.commit();
-    return usuaris;
-}
-
-
-void DAOUsuari::inserta(const usuari& u)
+void DAOUsuari::inserta(const Usuari& u)
 {
     odb::transaction t(db->begin());
-    shared_ptr<usuari> ptr(new usuari(u));
+    shared_ptr<Usuari> ptr(new Usuari(u));
     db->persist(ptr);
     t.commit();
 }
 
-void DAOUsuari::modifica(const usuari& u)
+void DAOUsuari::modifica(const Usuari& u)
 { // FET PER IA
     odb::transaction t(db->begin());
-    shared_ptr<usuari> ptr = db->load<usuari>(u.get_username());
-    ptr->set_nomcomplet(u.get_nomcomplet());
-    ptr->set_data_naixement(u.get_data_naixement());
+    shared_ptr<Usuari> ptr = db->load<Usuari>(u.getSobrenom());
+    ptr->set_nom(u.getNom());
+    ptr->set_edat(u.getEdat());
     t.commit();
 }
 
 void DAOUsuari::esborra(const string& username)
 {
     odb::transaction t(db->begin());
-    db->erase<usuari>(username);
+    db->erase<Usuari>(username);
     t.commit();
 }
 
+bool DAOUsuari::existeix(const string& username)
+{ 
+    odb::transaction t(db->begin());
+    shared_ptr<Usuari> ptr = db->load<Usuari>(username);
+    t.commit();
+    return ptr != nullptr;
+}
+
+Usuari DAOUsuari::obte(const string& username)
+{ 
+    odb::transaction t(db->begin());
+    shared_ptr<Usuari> ptr = db->load<Usuari>(username);
+    t.commit();
+    return *ptr;
+}
+
+std::vector<Usuari> DAOUsuari::tots()
+{ // FET PER IA
+    odb::transaction t(db->begin());
+    std::vector<Usuari> usuaris = db->load_all<Usuari>();
+    t.commit();
+    return usuaris;
+}

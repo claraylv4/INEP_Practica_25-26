@@ -8,17 +8,19 @@
 #include "usuari-odb.hxx" // fitxer generat per ODB
 #include "usuari.hxx"
 #include "connexioBD.hxx"
+
 class DAOUsuari {
     public:
     DAOUsuari();
-    // Operacions sobre usuari
-    bool existeix(const std::string& username);
-    usuari obte(const std::string& username);
-    std::vector<usuari> tots();
     
-    void inserta(const usuari& u);
-    void modifica(const usuari& u);
+    void inserta(const Usuari& u);
+    void modifica(const Usuari& u);
     void esborra(const std::string& username);
+    bool existeix(const std::string& username);
+    
+    Usuari obte(const std::string& username);
+    std::vector<Usuari> tots();
+    
     private:
         std::shared_ptr<odb::mysql::database> db;
 };
