@@ -1,9 +1,16 @@
 #include "usuari.hxx"
-// Falta constructor default? 
+#include "errors.hxx"
 
 // Constructor amb paràmetres
 Usuari::Usuari(string sobrenom, string nom, string email, string password, int edat)
     : _sobrenom(sobrenom), _nom(nom), _email(email), _password(password), _edat(edat) {
+}
+
+// Per CtrlConsultaUsuari
+DTOUsuari Usuari::obteInfo() {
+    // Implementació pendent segons necessitats
+    return DTOUsuari(_nom, _sobrenom, _email, _edat, _reserves.size());
+    // nom, sobrenom, correu, edat, numReserves
 }
 
 // Getters
@@ -27,6 +34,10 @@ int Usuari::getEdat() {
     return _edat;
 }
 
+vector<Reserva> Usuari::getReserves() {
+    return _reserves;
+}
+
 // Setters
 void Usuari::set_sobrenom(string sobrenom) {
     _sobrenom = sobrenom;
@@ -45,5 +56,6 @@ void Usuari::set_password(string password) {
 }
 
 void Usuari::set_edat(int edat) {
+    if (edat < 18) throw ModMenorEdat(); // #pragma db check dona problemes
     _edat = edat;
 }

@@ -1,6 +1,9 @@
 // DAOUsuari.cxx
 #include "DAOUsuari.hxx"
+#include "errors.hxx"
+
 #include <odb/transaction.hxx>
+#include <odb/query.hxx>
 using namespace std;
 
 DAOUsuari::DAOUsuari()
@@ -11,14 +14,28 @@ DAOUsuari::DAOUsuari()
 
 void DAOUsuari::inserta(const Usuari& u)
 {
-    odb::transaction t(db->begin());
-    shared_ptr<Usuari> ptr(new Usuari(u));
-    db->persist(ptr);
-    t.commit();
+    try {
+        odb::transaction t(db->begin());
+        shared_ptr<Usuari> ptr(new Usuari(u));
+        db->persist(ptr);
+        t.commit();
+    }
+    catch (const odb::exception& e) {
+        string msg = e.what();
+
+        if (msg.find("sobrenom") != string::npos)
+            throw SobrenomExisteix();
+        else if (msg.find("correu") != string::npos)
+            throw CorreuExisteix();
+        else if (msg.find("edat") != string::npos)
+            throw MenorEdat();
+        else
+            throw; // error desconegut
+    }
 }
 
 void DAOUsuari::modifica(const Usuari& u)
-{ // FET PER IA
+{ 
     odb::transaction t(db->begin());
     shared_ptr<Usuari> ptr = db->load<Usuari>(u.getSobrenom());
     ptr->set_nom(u.getNom());
@@ -41,6 +58,7 @@ bool DAOUsuari::existeix(const string& username)
     return ptr != nullptr;
 }
 
+
 Usuari DAOUsuari::obte(const string& username)
 { 
     odb::transaction t(db->begin());
@@ -49,10 +67,10 @@ Usuari DAOUsuari::obte(const string& username)
     return *ptr;
 }
 
-std::vector<Usuari> DAOUsuari::tots()
-{ // FET PER IA
+vector<Usuari> DAOUsuari::tots()
+{
     odb::transaction t(db->begin());
-    std::vector<Usuari> usuaris = db->load_all<Usuari>();
+    vector<Usuari> usuaris = db->load_all<Usuari>();
     t.commit();
     return usuaris;
 }

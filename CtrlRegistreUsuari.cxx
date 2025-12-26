@@ -5,6 +5,8 @@ CtrlRegistreUsuari::CtrlRegistreUsuari(DAOUsuari *dao) : _daoUser(dao) {}
 
 void CtrlRegistreUsuari::registraUsuari(const string &username, const string &password,
                                         const string &nom, const string &email, const int &edat) {
+  // CreateMessage 
   Usuari u(username, nom, email, password, edat);
+  // Inserta
   _daoUser->inserta(u);
 }

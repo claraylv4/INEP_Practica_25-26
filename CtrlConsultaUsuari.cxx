@@ -1,5 +1,6 @@
 // CtrlConsultaUsuari.cxx
 #include "CtrlConsultaUsuari.hxx"
+#include "planGo.hxx"
 #include <string>
 
 CtrlConsultaUsuari::CtrlConsultaUsuari(DAOUsuari *dao)
@@ -9,5 +10,5 @@ DTOUsuari CtrlConsultaUsuari::consultaUsuari() {
     // 1. Obtenir l'usuari loggejat des del singleton
     Usuari u = PlanGo::instancia().obteUsuari();
     // 2. Construir el DTO a partir del model
-    return DTOUsuari(u);
+    return u.obteInfo();
 }

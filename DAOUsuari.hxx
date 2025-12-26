@@ -3,9 +3,11 @@
 #include <memory>
 #include <vector>
 #include <string>
+
 #include <odb/core.hxx>
+#include <odb/database.hxx> 
 #include <odb/mysql/database.hxx>
-#include "usuari-odb.hxx" // fitxer generat per ODB
+
 #include "usuari.hxx"
 #include "connexioBD.hxx"
 
@@ -19,8 +21,9 @@ class DAOUsuari {
     bool existeix(const std::string& username);
     
     Usuari obte(const std::string& username);
-    std::vector<Usuari> tots();
+    vector<Usuari> tots();
     
     private:
-        std::shared_ptr<odb::mysql::database> db;
+        std::shared_ptr<odb::database> db;
+        
 };

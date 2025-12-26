@@ -6,7 +6,7 @@ class PlanGo {
 public:
     static PlanGo& instancia();
 
-    Usuari obteUsuari();  // usuari loggejat
+    Usuari obteUsuari() const;  // usuari loggejat
 
 private:
     PlanGo() {}

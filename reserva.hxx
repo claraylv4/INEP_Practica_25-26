@@ -20,10 +20,10 @@ public:
 private:
   friend class odb::access;
 
-#pragma db id // Anotacio per indicar que l'atribut és clau primària
+  #pragma db id // Anotacio per indicar que l'atribut és clau primària
   int _id;
 
-  date _dataRes; // Fer classe data?
+  date _dataRes; 
   int _numPlaces;
   float _preuPagat;
 };

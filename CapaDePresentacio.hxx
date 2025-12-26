@@ -15,6 +15,8 @@ class CapaDePresentacio
         // Operacions de presentació (només cin/cout)
         void registrarUsuari();
         void consultaUsuari(); 
+        void modificaUsuari(); 
+        void esborraUsuari();
     private:
     //constructor de la classe
     CapaDePresentacio() = default;
